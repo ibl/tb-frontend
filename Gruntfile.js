@@ -13,7 +13,7 @@ module.exports = function (grunt) {
             options: {
                 livereload: true
             },
-            files: ["index.html", "scripts/**/*", "templates/**/*"]
+            files: ["index.html", "scripts/**/*", "styles/**/*", "templates/**/*"]
         }
     });
 
