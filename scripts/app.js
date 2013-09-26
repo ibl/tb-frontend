@@ -8,7 +8,15 @@
     app = angular.module("app", ["ngResource"]);
 
     app.config(function ($routeProvider) {
-        var patientResolver;
+        var patientsResolver, patientResolver;
+        patientsResolver = function ($q, Patient) {
+            var deferred;
+            deferred = $q.defer();
+            Patient.query(function (patients) {
+                deferred.resolve(patients);
+            });
+            return deferred.promise;
+        };
         patientResolver = function ($q, $route, Patient) {
             var deferred;
             deferred = $q.defer();
@@ -36,7 +44,10 @@
             }
         }).when("/conferences/new", {
             templateUrl: "templates/conferences/edit.html",
-            controller: "ConferenceNewController"
+            controller: "ConferenceNewController",
+            resolve: {
+                patients: patientsResolver
+            }
         }).when("/conferences/edit/:id", {
             templateUrl: "templates/conferences/edit.html",
             controller: "ConferenceEditController",
@@ -50,20 +61,14 @@
                         deferred.resolve(conference);
                     });
                     return deferred.promise;
-                }
+                },
+                patients: patientsResolver
             }
         }).when("/patients", {
             templateUrl: "templates/patients/list.html",
             controller: "PatientListController",
             resolve: {
-                patients: function ($q, Patient) {
-                    var deferred;
-                    deferred = $q.defer();
-                    Patient.query(function (patients) {
-                        deferred.resolve(patients);
-                    });
-                    return deferred.promise;
-                }
+                patients: patientsResolver
             }
         }).when("/patients/view/:id", {
             templateUrl: "templates/patients/view.html",
@@ -107,17 +112,47 @@
         $scope.conferences = conferences;
     });
 
-    app.controller("ConferenceNewController", function ($scope, $location, Conference) {
+    app.controller("ConferenceNewController", function ($scope, $location, Conference, patients) {
+        $scope.patients = patients;
         $scope.submit = function (newConference) {
+         // Find checked patients.
+            newConference.patients = patients.filter(function (patient) {
+                if (patient.hasOwnProperty("checked") === true && patient.checked === true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).map(function (patient) {
+             // Convert to array.
+                return patient._id;
+            });
             Conference.save(newConference, function () {
                 $location.path("/conferences");
             });
         };
     });
 
-    app.controller("ConferenceEditController", function ($scope, $location, Conference, conference) {
+    app.controller("ConferenceEditController", function ($scope, $location, Conference, conference, patients) {
         $scope.conference = conference;
+     // Pre-check patients.
+        $scope.patients = patients.map(function (patient) {
+            if (conference.patients.indexOf(patient._id) > -1) {
+                patient.checked = true;
+            }
+            return patient;
+        });
         $scope.submit = function (newConference) {
+         // Find checked patients.
+            newConference.patients = patients.filter(function (patient) {
+                if (patient.hasOwnProperty("checked") === true && patient.checked === true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).map(function (patient) {
+             // Convert to array.
+                return patient._id;
+            });
             Conference.update(newConference, function () {
                 $location.path("/conferences");
             });

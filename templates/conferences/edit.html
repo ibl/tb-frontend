@@ -7,5 +7,12 @@
         <label for="name">Name</label>
         <input type="text" name="name" class="form-control" placeholder="Enter name" ng-model="conference.name">
     </div>
+    <div class="form-group">
+        <strong>Patients<strong><br>
+        <label class="checkbox-inline" ng-repeat="patient in patients">
+            <input type="checkbox" name="patients[]" value="{{patient._id}}" ng-checked="patient.checked" ng-model="patient.checked">
+            {{patient.name}}
+        </label>
+    </div>
     <button type="submit" class="btn btn-default" ng-click="submit(conference)">Submit</button>
 </form>
