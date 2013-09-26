@@ -1,0 +1,10 @@
+<table class="table table-striped spacer">
+    <tr>
+        <th>Date</th>
+        <th>Name</th>
+    </tr>
+    <tr ng-repeat="conference in conferences">
+        <td>{{conference.date | date:'shortDate'}}</td>
+        <td>{{conference.name}}</td>
+    </tr>
+</table>

@@ -21,6 +21,19 @@
         };
         $routeProvider.when("/", {
             templateUrl: "templates/index.html",
+        }).when("/conferences", {
+            templateUrl: "templates/conferences/list.html",
+            controller: "ConferenceListController",
+            resolve: {
+                conferences: function ($q, Conference) {
+                    var deferred;
+                    deferred = $q.defer();
+                    Conference.query(function (conferences) {
+                        deferred.resolve(conferences);
+                    });
+                    return deferred.promise;
+                }
+            }
         }).when("/patients", {
             templateUrl: "templates/patients/list.html",
             controller: "PatientListController",
@@ -52,6 +65,16 @@
         });
     });
 
+    app.factory("Conference", function ($resource) {
+        return $resource(backend + "/conferences/:id", {
+            id: "@_id"
+        }, {
+            update: {
+                method: "PUT"
+            }
+        });
+    });
+
     app.factory("Patient", function ($resource) {
         return $resource(backend + "/patients/:id", {
             id: "@_id"
@@ -60,6 +83,10 @@
                 method: "PUT"
             }
         });
+    });
+
+    app.controller("ConferenceListController", function ($scope, conferences) {
+        $scope.conferences = conferences;
     });
 
     app.controller("PatientListController", function ($scope, patients) {
