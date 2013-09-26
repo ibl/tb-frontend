@@ -37,6 +37,21 @@
         }).when("/conferences/new", {
             templateUrl: "templates/conferences/edit.html",
             controller: "ConferenceNewController"
+        }).when("/conferences/edit/:id", {
+            templateUrl: "templates/conferences/edit.html",
+            controller: "ConferenceEditController",
+            resolve: {
+                conference: function ($q, $route, Conference) {
+                    var deferred;
+                    deferred = $q.defer();
+                    Conference.get({
+                        id: $route.current.params.id
+                    }, function (conference) {
+                        deferred.resolve(conference);
+                    });
+                    return deferred.promise;
+                }
+            }
         }).when("/patients", {
             templateUrl: "templates/patients/list.html",
             controller: "PatientListController",
@@ -95,6 +110,15 @@
     app.controller("ConferenceNewController", function ($scope, $location, Conference) {
         $scope.submit = function (newConference) {
             Conference.save(newConference, function () {
+                $location.path("/conferences");
+            });
+        };
+    });
+
+    app.controller("ConferenceEditController", function ($scope, $location, Conference, conference) {
+        $scope.conference = conference;
+        $scope.submit = function (newConference) {
+            Conference.update(newConference, function () {
                 $location.path("/conferences");
             });
         };
