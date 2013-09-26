@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-md-3">
+        <form ng-show="recentConferences">
+            <div class="form-group">
+                <label>Conference</label>
+                <select class="form-control" ng-model="conference" ng-options="conference.date | date:'shortDate' for conference in recentConferences">
+                </select>
+            </div>
+        </form>
+        <div class="spacer">
+            <strong>Patients</strong><br>
+            <ul>
+                <li ng-repeat="patient in conferencePatients">
+                    {{patient.name}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-9">
+    </div>
+</div>

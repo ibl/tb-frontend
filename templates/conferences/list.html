@@ -12,6 +12,10 @@
         <td>{{conference.date | date:'shortDate'}}</td>
         <td>{{conference.name}}</td>
         <td>
+            <a href="#/conferences/view/{{conference._id}}" class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-search"></span>
+                View
+            </a>
             <a href="#/conferences/edit/{{conference._id}}" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit
