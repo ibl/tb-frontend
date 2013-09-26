@@ -12,6 +12,10 @@
         <td>{{patient.name}}</td>
         <td>{{patient.mrn}}</td>
         <td>
+            <a href="#/patients/view/{{patient._id}}" class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-search"></span>
+                View
+            </a>
             <a href="#/patients/edit/{{patient._id}}" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit

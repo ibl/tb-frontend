@@ -8,6 +8,17 @@
     app = angular.module("app", ["ngResource"]);
 
     app.config(function ($routeProvider) {
+        var patientResolver;
+        patientResolver = function ($q, $route, Patient) {
+            var deferred;
+            deferred = $q.defer();
+            Patient.get({
+                id: $route.current.params.id
+            }, function (patient) {
+                deferred.resolve(patient);
+            });
+            return deferred.promise;
+        };
         $routeProvider.when("/", {
             templateUrl: "templates/index.html",
         }).when("/patients", {
@@ -23,6 +34,12 @@
                     return deferred.promise;
                 }
             }
+        }).when("/patients/view/:id", {
+            templateUrl: "templates/patients/view.html",
+            controller: "PatientViewController",
+            resolve: {
+                patient: patientResolver
+            }
         }).when("/patients/new", {
             templateUrl: "templates/patients/edit.html",
             controller: "PatientNewController"
@@ -30,16 +47,7 @@
             templateUrl: "templates/patients/edit.html",
             controller: "PatientEditController",
             resolve: {
-                patient: function ($q, $route, Patient) {
-                    var deferred;
-                    deferred = $q.defer();
-                    Patient.get({
-                        id: $route.current.params.id
-                    }, function (patient) {
-                        deferred.resolve(patient);
-                    });
-                    return deferred.promise;
-                }
+                patient: patientResolver
             }
         });
     });
@@ -56,6 +64,10 @@
 
     app.controller("PatientListController", function ($scope, patients) {
         $scope.patients = patients;
+    });
+
+    app.controller("PatientViewController", function ($scope, patient) {
+        $scope.patient = patient;
     });
 
     app.controller("PatientNewController", function ($scope, $location, Patient) {

@@ -1,0 +1,8 @@
+<p><strong>Name:</strong> {{patient.name}}</p>
+<p><strong>MRN:</strong> {{patient.mrn}}</p>
+<p>
+    <strong>Conferences:</strong>
+    <ul ng-repeat="conference in patient.conferences">
+        <li>{{conference.name}}</li>
+    </ul>
+</p>
