@@ -2,7 +2,7 @@
 <p><strong>MRN:</strong> {{patient.mrn}}</p>
 <p>
     <strong>Conferences:</strong>
-    <ul ng-repeat="conference in patient.conferences">
-        <li>{{conference.name}}</li>
+    <ul ng-repeat="conference in patientConferences">
+        <li><a href="#/conferences/view/{{conference._id}}">{{conference.date | date:'shortDate'}}: {{conference.name}}</a></li>
     </ul>
 </p>

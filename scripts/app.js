@@ -8,7 +8,15 @@
     app = angular.module("app", ["ngResource"]);
 
     app.config(function ($routeProvider) {
-        var conferenceResolver, patientsResolver, patientResolver;
+        var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
+        conferencesResolver = function ($q, Conference) {
+            var deferred;
+            deferred = $q.defer();
+            Conference.query(function (conferences) {
+                deferred.resolve(conferences);
+            });
+            return deferred.promise;
+        };
         conferenceResolver = function ($q, $route, Conference) {
             var deferred;
             deferred = $q.defer();
@@ -58,14 +66,7 @@
             templateUrl: "templates/conferences/list.html",
             controller: "ConferenceListController",
             resolve: {
-                conferences: function ($q, Conference) {
-                    var deferred;
-                    deferred = $q.defer();
-                    Conference.query(function (conferences) {
-                        deferred.resolve(conferences);
-                    });
-                    return deferred.promise;
-                }
+                conferences: conferencesResolver
             }
         }).when("/conferences/view/:id", {
             templateUrl: "templates/conferences/view.html",
@@ -97,7 +98,8 @@
             templateUrl: "templates/patients/view.html",
             controller: "PatientViewController",
             resolve: {
-                patient: patientResolver
+                patient: patientResolver,
+                conferences: conferencesResolver
             }
         }).when("/patients/new", {
             templateUrl: "templates/patients/edit.html",
@@ -217,8 +219,15 @@
         $scope.patients = patients;
     });
 
-    app.controller("PatientViewController", function ($scope, patient) {
+    app.controller("PatientViewController", function ($scope, patient, conferences) {
         $scope.patient = patient;
+        $scope.patientConferences = conferences.filter(function (conference) {
+            if (conference.patients.indexOf($scope.patient._id) > -1) {
+                return true;
+            } else {
+                return false;
+            }
+        });
     });
 
     app.controller("PatientNewController", function ($scope, $location, Patient) {
