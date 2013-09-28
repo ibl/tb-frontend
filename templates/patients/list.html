@@ -6,9 +6,16 @@
     <tr>
         <th>Name</th>
         <th>MRN</th>
+        <th>Options</th>
     </tr>
     <tr ng-repeat="patient in patients">
         <td>{{patient.name}}</td>
         <td>{{patient.mrn}}</td>
+        <td>
+            <a href="#/patients/edit/{{patient._id}}" class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-pencil"></span>
+                Edit
+            </a>
+        </td>
     </tr>
 </table>
