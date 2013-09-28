@@ -34,6 +34,9 @@
                     return deferred.promise;
                 }
             }
+        }).when("/conferences/new", {
+            templateUrl: "templates/conferences/edit.html",
+            controller: "ConferenceNewController"
         }).when("/patients", {
             templateUrl: "templates/patients/list.html",
             controller: "PatientListController",
@@ -87,6 +90,14 @@
 
     app.controller("ConferenceListController", function ($scope, conferences) {
         $scope.conferences = conferences;
+    });
+
+    app.controller("ConferenceNewController", function ($scope, $location, Conference) {
+        $scope.submit = function (newConference) {
+            Conference.save(newConference, function () {
+                $location.path("/conferences");
+            });
+        };
     });
 
     app.controller("PatientListController", function ($scope, patients) {
