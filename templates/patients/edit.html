@@ -1,0 +1,11 @@
+<form role="form">
+    <div class="form-group">
+        <label for="mrn">MRN</label>
+        <input type="text" name="mrn" class="form-control" placeholder="Enter MRN" ng-model="patient.mrn">
+    </div>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Enter name" ng-model="patient.name">
+    </div>
+    <button type="submit" class="btn btn-default" ng-click="submit(patient)">Submit</button>
+</form>

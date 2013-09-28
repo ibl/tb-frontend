@@ -23,6 +23,9 @@
                     return deferred.promise;
                 }
             }
+        }).when("/patients/new", {
+            templateUrl: "templates/patients/edit.html",
+            controller: "PatientNewController"
         });
     });
 
@@ -34,6 +37,14 @@
 
     app.controller("PatientListController", function ($scope, patients) {
         $scope.patients = patients;
+    });
+
+    app.controller("PatientNewController", function ($scope, $location, Patient) {
+        $scope.submit = function (newPatient) {
+            Patient.save(newPatient, function () {
+                $location.path("/patients");
+            });
+        };
     });
 
 }());
