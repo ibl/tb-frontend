@@ -1,4 +1,4 @@
-<a ui-sref="conferencesNew" class="btn btn-default">
+<a ui-sref="createConference" class="btn btn-default">
     <span class="glyphicon glyphicon-plus-sign"></span>
     Add conference
 </a>
@@ -12,11 +12,11 @@
         <td>{{conference.date | date:'shortDate'}}</td>
         <td>{{conference.name}}</td>
         <td>
-            <a ui-sref="conferencesView({ conferenceId: conference._id })" class="btn btn-default btn-xs">
+            <a ui-sref="viewConference({ conferenceId: conference._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-search"></span>
                 View
             </a>
-            <a ui-sref="conferencesEdit({ conferenceId: conference._id })" class="btn btn-default btn-xs">
+            <a ui-sref="editConference({ conferenceId: conference._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit
             </a>

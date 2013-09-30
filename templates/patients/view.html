@@ -4,7 +4,7 @@
     <strong>Conferences:</strong>
     <ul ng-repeat="conference in patientConferences">
         <li>
-            <a ui-sref="conferencesView({ conferenceId: conference._id })">
+            <a ui-sref="viewConference({ conferenceId: conference._id })">
                 {{conference.date | date:'shortDate'}}: {{conference.name}}
             </a>
         </li>
