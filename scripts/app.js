@@ -9,56 +9,31 @@
 
     app.config(function ($routeProvider) {
         var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
-        conferencesResolver = function ($q, Conference) {
-            var deferred;
-            deferred = $q.defer();
-            Conference.query(function (conferences) {
-                deferred.resolve(conferences);
-            });
-            return deferred.promise;
+        conferencesResolver = function (Conference) {
+            return Conference.query().$promise;
         };
-        conferenceResolver = function ($q, $route, Conference) {
-            var deferred;
-            deferred = $q.defer();
-            Conference.get({
+        conferenceResolver = function ($route, Conference) {
+            return Conference.get({
                 id: $route.current.params.id
-            }, function (conference) {
-                deferred.resolve(conference);
-            });
-            return deferred.promise;
+            }).$promise;
         };
-        patientsResolver = function ($q, Patient) {
-            var deferred;
-            deferred = $q.defer();
-            Patient.query(function (patients) {
-                deferred.resolve(patients);
-            });
-            return deferred.promise;
+        patientsResolver = function (Patient) {
+            return Patient.query().$promise;
         };
-        patientResolver = function ($q, $route, Patient) {
-            var deferred;
-            deferred = $q.defer();
-            Patient.get({
+        patientResolver = function ($route, Patient) {
+            return Patient.get({
                 id: $route.current.params.id
-            }, function (patient) {
-                deferred.resolve(patient);
-            });
-            return deferred.promise;
+            }).$promise;
         };
         $routeProvider.when("/", {
             templateUrl: "templates/conferences/view.html",
             controller: "IndexController",
             resolve: {
-                recentConferences: function ($q, Conference) {
-                    var deferred;
-                    deferred = $q.defer();
-                    Conference.query({
+                recentConferences: function (Conference) {
+                    return Conference.query({
                         limit: 10,
                         sort: "-date"
-                    }, function (conferences) {
-                        deferred.resolve(conferences);
-                    });
-                    return deferred.promise;
+                    }).$promise;
                 },
                 patients: patientsResolver
             }
