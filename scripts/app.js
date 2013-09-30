@@ -84,6 +84,15 @@
                 patient: patientResolver,
                 conferences: conferencesResolver
             }
+        }).state("viewSelectedPatient", {
+            parent: "viewConference",
+            url: "/patient/:patientId",
+            templateUrl: "templates/patients/view.html",
+            controller: "ViewPatientController",
+            resolve: {
+                patient: patientResolver,
+                conferences: conferencesResolver
+            }
         }).state("createPatient", {
             url: "/patients/new",
             templateUrl: "templates/patients/edit.html",

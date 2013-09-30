@@ -11,11 +11,14 @@
             <strong>Patients</strong><br>
             <ul>
                 <li ng-repeat="patient in conferencePatients">
-                    {{patient.name}}
+                    <a ui-sref="viewSelectedPatient({ conferenceId: conference._id, patientId: patient._id })">
+                        {{patient.name}}
+                    </a>
                 </li>
             </ul>
         </div>
     </div>
     <div class="col-md-9">
+        <div ui-view></div>
     </div>
 </div>
