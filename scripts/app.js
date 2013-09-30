@@ -5,108 +5,102 @@
 
     backend = "http://hydrogen.path.uab.edu/tb/api/v1";
 
-    app = angular.module("app", ["ngResource"]);
+    app = angular.module("app", ["ngResource", "ui.router"]);
 
-    app.config(function ($routeProvider) {
+    app.config(function ($stateProvider, $urlRouterProvider) {
         var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
-        conferencesResolver = function ($q, Conference) {
-            var deferred;
-            deferred = $q.defer();
-            Conference.query(function (conferences) {
-                deferred.resolve(conferences);
-            });
-            return deferred.promise;
+        conferencesResolver = function (Conference) {
+            return Conference.query().$promise;
         };
-        conferenceResolver = function ($q, $route, Conference) {
-            var deferred;
-            deferred = $q.defer();
-            Conference.get({
-                id: $route.current.params.id
-            }, function (conference) {
-                deferred.resolve(conference);
-            });
-            return deferred.promise;
+        conferenceResolver = function ($stateParams, Conference) {
+            return Conference.get({
+                id: $stateParams.conferenceId
+            }).$promise;
         };
-        patientsResolver = function ($q, Patient) {
-            var deferred;
-            deferred = $q.defer();
-            Patient.query(function (patients) {
-                deferred.resolve(patients);
-            });
-            return deferred.promise;
+        patientsResolver = function (Patient) {
+            return Patient.query().$promise;
         };
-        patientResolver = function ($q, $route, Patient) {
-            var deferred;
-            deferred = $q.defer();
-            Patient.get({
-                id: $route.current.params.id
-            }, function (patient) {
-                deferred.resolve(patient);
-            });
-            return deferred.promise;
+        patientResolver = function ($stateParams, Patient) {
+            return Patient.get({
+                id: $stateParams.patientId
+            }).$promise;
         };
-        $routeProvider.when("/", {
+        $urlRouterProvider.otherwise("/");
+        $stateProvider.state("index", {
+            url: "/",
             templateUrl: "templates/conferences/view.html",
             controller: "IndexController",
             resolve: {
-                recentConferences: function ($q, Conference) {
-                    var deferred;
-                    deferred = $q.defer();
-                    Conference.query({
+                recentConferences: function (Conference) {
+                    return Conference.query({
                         limit: 10,
                         sort: "-date"
-                    }, function (conferences) {
-                        deferred.resolve(conferences);
-                    });
-                    return deferred.promise;
+                    }).$promise;
                 },
                 patients: patientsResolver
             }
-        }).when("/conferences", {
+        }).state("listConferences", {
+            url: "/conferences",
             templateUrl: "templates/conferences/list.html",
-            controller: "ConferenceListController",
+            controller: "ListConferencesController",
             resolve: {
                 conferences: conferencesResolver
             }
-        }).when("/conferences/view/:id", {
+        }).state("viewConference", {
+            url: "/conferences/view/:conferenceId",
             templateUrl: "templates/conferences/view.html",
-            controller: "ConferenceViewController",
+            controller: "ViewConferenceController",
             resolve: {
                 conference: conferenceResolver,
                 patients: patientsResolver
             }
-        }).when("/conferences/new", {
+        }).state("createConference", {
+            url: "/conferences/new",
             templateUrl: "templates/conferences/edit.html",
-            controller: "ConferenceNewController",
+            controller: "CreateConferenceController",
             resolve: {
                 patients: patientsResolver
             }
-        }).when("/conferences/edit/:id", {
+        }).state("editConference", {
+            url: "/conferences/edit/:conferenceId",
             templateUrl: "templates/conferences/edit.html",
-            controller: "ConferenceEditController",
+            controller: "EditConferenceController",
             resolve: {
                 conference: conferenceResolver,
                 patients: patientsResolver
             }
-        }).when("/patients", {
+        }).state("listPatients", {
+            url: "/patients",
             templateUrl: "templates/patients/list.html",
-            controller: "PatientListController",
+            controller: "ListPatientsController",
             resolve: {
                 patients: patientsResolver
             }
-        }).when("/patients/view/:id", {
+        }).state("viewPatient", {
+            url: "/patients/view/:patientId",
             templateUrl: "templates/patients/view.html",
-            controller: "PatientViewController",
+            controller: "ViewPatientController",
             resolve: {
                 patient: patientResolver,
                 conferences: conferencesResolver
             }
-        }).when("/patients/new", {
+        }).state("viewSelectedPatient", {
+            parent: "viewConference",
+            url: "/patient/:patientId",
+            templateUrl: "templates/patients/view.html",
+            controller: "ViewPatientController",
+            resolve: {
+                patient: patientResolver,
+                conferences: conferencesResolver
+            }
+        }).state("createPatient", {
+            url: "/patients/new",
             templateUrl: "templates/patients/edit.html",
-            controller: "PatientNewController"
-        }).when("/patients/edit/:id", {
+            controller: "CreatePatientController"
+        }).state("editPatient", {
+            url: "/patients/edit/:patientId",
             templateUrl: "templates/patients/edit.html",
-            controller: "PatientEditController",
+            controller: "EditPatientController",
             resolve: {
                 patient: patientResolver
             }
@@ -150,11 +144,11 @@
         $scope.conference = recentConferences[0];
     });
 
-    app.controller("ConferenceListController", function ($scope, conferences) {
+    app.controller("ListConferencesController", function ($scope, conferences) {
         $scope.conferences = conferences;
     });
 
-    app.controller("ConferenceViewController", function ($scope, conference, patients) {
+    app.controller("ViewConferenceController", function ($scope, conference, patients) {
         $scope.conference = conference;
         $scope.conferencePatients = $scope.conference.patients.map(function (conferencePatientId) {
          // Join patients.
@@ -168,7 +162,7 @@
         });
     });
 
-    app.controller("ConferenceNewController", function ($scope, $location, Conference, patients) {
+    app.controller("CreateConferenceController", function ($scope, $location, Conference, patients) {
         $scope.patients = patients;
         $scope.submit = function (newConference) {
          // Find checked patients.
@@ -188,7 +182,7 @@
         };
     });
 
-    app.controller("ConferenceEditController", function ($scope, $location, Conference, conference, patients) {
+    app.controller("EditConferenceController", function ($scope, $location, Conference, conference, patients) {
         $scope.conference = conference;
      // Pre-check patients.
         $scope.patients = patients.map(function (patient) {
@@ -215,11 +209,11 @@
         };
     });
 
-    app.controller("PatientListController", function ($scope, patients) {
+    app.controller("ListPatientsController", function ($scope, patients) {
         $scope.patients = patients;
     });
 
-    app.controller("PatientViewController", function ($scope, patient, conferences) {
+    app.controller("ViewPatientController", function ($scope, patient, conferences) {
         $scope.patient = patient;
         $scope.patientConferences = conferences.filter(function (conference) {
             if (conference.patients.indexOf($scope.patient._id) > -1) {
@@ -230,7 +224,7 @@
         });
     });
 
-    app.controller("PatientNewController", function ($scope, $location, Patient) {
+    app.controller("CreatePatientController", function ($scope, $location, Patient) {
         $scope.submit = function (newPatient) {
             Patient.save(newPatient, function () {
                 $location.path("/patients");
@@ -238,7 +232,7 @@
         };
     });
 
-    app.controller("PatientEditController", function ($scope, $location, Patient, patient) {
+    app.controller("EditPatientController", function ($scope, $location, Patient, patient) {
         $scope.patient = patient;
         $scope.submit = function (newPatient) {
             Patient.update(newPatient, function () {

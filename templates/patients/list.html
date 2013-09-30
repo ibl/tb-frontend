@@ -1,8 +1,8 @@
-<a href="#/patients/new" class="btn btn-default">
+<a ui-sref="createPatient" class="btn btn-default spacer">
     <span class="glyphicon glyphicon-plus-sign"></span>
     Add patient
 </a>
-<table class="table table-striped spacer">
+<table class="table table-striped">
     <tr>
         <th>Name</th>
         <th>MRN</th>
@@ -12,11 +12,11 @@
         <td>{{patient.name}}</td>
         <td>{{patient.mrn}}</td>
         <td>
-            <a href="#/patients/view/{{patient._id}}" class="btn btn-default btn-xs">
+            <a ui-sref="viewPatient({ patientId: patient._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-search"></span>
                 View
             </a>
-            <a href="#/patients/edit/{{patient._id}}" class="btn btn-default btn-xs">
+            <a ui-sref="editPatient({ patientId: patient._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit
             </a>

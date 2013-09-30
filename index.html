@@ -17,21 +17,22 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Tumor Boards</a>
+                    <a ui-sref="index" class="navbar-brand">Tumor Boards</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="#/conferences">Conferences</a></li>
-                        <li><a href="#/patients">Patients</a></li>
+                        <li><a ui-sref="listConferences">Conferences</a></li>
+                        <li><a ui-sref="listPatients">Patients</a></li>
                     </ul>
                 </div>
             </nav>
-            <ng-view></ng-view>
+            <div ui-view></div>
         </div>
         <script src="bower_components/jquery/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="bower_components/angular/angular.min.js"></script>
         <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+        <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
         <script src="scripts/app.js"></script>
     </body>
 </html>

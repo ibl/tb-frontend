@@ -3,6 +3,10 @@
 <p>
     <strong>Conferences:</strong>
     <ul ng-repeat="conference in patientConferences">
-        <li><a href="#/conferences/view/{{conference._id}}">{{conference.date | date:'shortDate'}}: {{conference.name}}</a></li>
+        <li>
+            <a ui-sref="viewConference({ conferenceId: conference._id })">
+                {{conference.date | date:'shortDate'}}: {{conference.name}}
+            </a>
+        </li>
     </ul>
 </p>
