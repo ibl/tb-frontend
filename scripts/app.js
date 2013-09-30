@@ -5,7 +5,7 @@
 
     backend = "http://hydrogen.path.uab.edu/tb/api/v1";
 
-    app = angular.module("app", ["ngResource"]);
+    app = angular.module("app", ["ngRoute", "ngResource"]);
 
     app.config(function ($routeProvider) {
         var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
