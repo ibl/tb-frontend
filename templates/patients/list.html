@@ -12,11 +12,11 @@
         <td>{{patient.name}}</td>
         <td>{{patient.mrn}}</td>
         <td>
-            <a ui-sref="patientsView({ id: patient._id })" class="btn btn-default btn-xs">
+            <a ui-sref="patientsView({ patientId: patient._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-search"></span>
                 View
             </a>
-            <a ui-sref="patientsEdit({ id: patient._id })" class="btn btn-default btn-xs">
+            <a ui-sref="patientsEdit({ patientId: patient._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit
             </a>

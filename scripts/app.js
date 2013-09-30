@@ -14,7 +14,7 @@
         };
         conferenceResolver = function ($stateParams, Conference) {
             return Conference.get({
-                id: $stateParams.id
+                id: $stateParams.conferenceId
             }).$promise;
         };
         patientsResolver = function (Patient) {
@@ -22,7 +22,7 @@
         };
         patientResolver = function ($stateParams, Patient) {
             return Patient.get({
-                id: $stateParams.id
+                id: $stateParams.patientId
             }).$promise;
         };
         $urlRouterProvider.otherwise("/");
@@ -47,7 +47,7 @@
                 conferences: conferencesResolver
             }
         }).state("conferencesView", {
-            url: "/conferences/view/:id",
+            url: "/conferences/view/:conferenceId",
             templateUrl: "templates/conferences/view.html",
             controller: "ConferenceViewController",
             resolve: {
@@ -62,7 +62,7 @@
                 patients: patientsResolver
             }
         }).state("conferencesEdit", {
-            url: "/conferences/edit/:id",
+            url: "/conferences/edit/:conferenceId",
             templateUrl: "templates/conferences/edit.html",
             controller: "ConferenceEditController",
             resolve: {
@@ -77,7 +77,7 @@
                 patients: patientsResolver
             }
         }).state("patientsView", {
-            url: "/patients/view/:id",
+            url: "/patients/view/:patientId",
             templateUrl: "templates/patients/view.html",
             controller: "PatientViewController",
             resolve: {
@@ -89,7 +89,7 @@
             templateUrl: "templates/patients/edit.html",
             controller: "PatientNewController"
         }).state("patientsEdit", {
-            url: "/patients/edit/:id",
+            url: "/patients/edit/:patientId",
             templateUrl: "templates/patients/edit.html",
             controller: "PatientEditController",
             resolve: {

@@ -12,11 +12,11 @@
         <td>{{conference.date | date:'shortDate'}}</td>
         <td>{{conference.name}}</td>
         <td>
-            <a ui-sref="conferencesView({ id: conference._id })" class="btn btn-default btn-xs">
+            <a ui-sref="conferencesView({ conferenceId: conference._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-search"></span>
                 View
             </a>
-            <a ui-sref="conferencesEdit({ id: conference._id })" class="btn btn-default btn-xs">
+            <a ui-sref="conferencesEdit({ conferenceId: conference._id })" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-pencil"></span>
                 Edit
             </a>
