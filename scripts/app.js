@@ -5,27 +5,29 @@
 
     backend = "http://hydrogen.path.uab.edu/tb/api/v1";
 
-    app = angular.module("app", ["ngRoute", "ngResource"]);
+    app = angular.module("app", ["ngResource", "ui.router"]);
 
-    app.config(function ($routeProvider) {
+    app.config(function ($stateProvider, $urlRouterProvider) {
         var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
         conferencesResolver = function (Conference) {
             return Conference.query().$promise;
         };
-        conferenceResolver = function ($route, Conference) {
+        conferenceResolver = function ($stateParams, Conference) {
             return Conference.get({
-                id: $route.current.params.id
+                id: $stateParams.id
             }).$promise;
         };
         patientsResolver = function (Patient) {
             return Patient.query().$promise;
         };
-        patientResolver = function ($route, Patient) {
+        patientResolver = function ($stateParams, Patient) {
             return Patient.get({
-                id: $route.current.params.id
+                id: $stateParams.id
             }).$promise;
         };
-        $routeProvider.when("/", {
+        $urlRouterProvider.otherwise("/");
+        $stateProvider.state("index", {
+            url: "/",
             templateUrl: "templates/conferences/view.html",
             controller: "IndexController",
             resolve: {
@@ -37,49 +39,57 @@
                 },
                 patients: patientsResolver
             }
-        }).when("/conferences", {
+        }).state("conferences", {
+            url: "/conferences",
             templateUrl: "templates/conferences/list.html",
             controller: "ConferenceListController",
             resolve: {
                 conferences: conferencesResolver
             }
-        }).when("/conferences/view/:id", {
+        }).state("conferencesView", {
+            url: "/conferences/view/:id",
             templateUrl: "templates/conferences/view.html",
             controller: "ConferenceViewController",
             resolve: {
                 conference: conferenceResolver,
                 patients: patientsResolver
             }
-        }).when("/conferences/new", {
+        }).state("conferencesNew", {
+            url: "/conferences/new",
             templateUrl: "templates/conferences/edit.html",
             controller: "ConferenceNewController",
             resolve: {
                 patients: patientsResolver
             }
-        }).when("/conferences/edit/:id", {
+        }).state("conferencesEdit", {
+            url: "/conferences/edit/:id",
             templateUrl: "templates/conferences/edit.html",
             controller: "ConferenceEditController",
             resolve: {
                 conference: conferenceResolver,
                 patients: patientsResolver
             }
-        }).when("/patients", {
+        }).state("patients", {
+            url: "/patients",
             templateUrl: "templates/patients/list.html",
             controller: "PatientListController",
             resolve: {
                 patients: patientsResolver
             }
-        }).when("/patients/view/:id", {
+        }).state("patientsView", {
+            url: "/patients/view/:id",
             templateUrl: "templates/patients/view.html",
             controller: "PatientViewController",
             resolve: {
                 patient: patientResolver,
                 conferences: conferencesResolver
             }
-        }).when("/patients/new", {
+        }).state("patientsNew", {
+            url: "/patients/new",
             templateUrl: "templates/patients/edit.html",
             controller: "PatientNewController"
-        }).when("/patients/edit/:id", {
+        }).state("patientsEdit", {
+            url: "/patients/edit/:id",
             templateUrl: "templates/patients/edit.html",
             controller: "PatientEditController",
             resolve: {
