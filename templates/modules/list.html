@@ -1,0 +1,11 @@
+<form class="form-inline spacer" role="form">
+    <div class="form-group">
+        <input type="text" name="module" class="form-control" placeholder="Enter URL" ng-model="module" value="{{module}}">
+    </div>
+    <button type="submit" class="btn btn-default" ng-click="loadModule(module)">Submit</button>
+</form>
+<table class="table table-striped">
+    <tr ng-repeat="module in modules">
+        <td>{{module}}</td>
+    </tr>
+</table>
