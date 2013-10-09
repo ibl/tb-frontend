@@ -104,6 +104,24 @@
             resolve: {
                 patient: patientResolver
             }
+        }).state("listModules", {
+            url: "/modules",
+            templateUrl: "templates/modules/list.html",
+            controller: "ListModulesController",
+            resolve: {
+                modules: function ($q) {
+                    var deferred;
+                    deferred = $q.defer();
+                    ganglion.registry.list(function (err, modules) {
+                        if (err !== null) {
+                            deferred.reject(err);
+                        } else {
+                            deferred.resolve(modules);
+                        }
+                    });
+                    return deferred.promise;
+                }
+            }
         });
     });
 
@@ -239,6 +257,10 @@
                 $location.path("/patients");
             });
         };
+    });
+
+    app.controller("ListModulesController", function ($scope, modules) {
+        $scope.modules = modules;
     });
 
 }());
