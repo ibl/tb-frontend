@@ -261,6 +261,13 @@
 
     app.controller("ListModulesController", function ($scope, modules) {
         $scope.modules = modules;
+        $scope.loadModule = function (module) {
+            ganglion.loadModule(module, function () {
+                ganglion.registry.list(function (err, modules) {
+                    location.reload();
+                });
+            });
+        };
     });
 
 }());
