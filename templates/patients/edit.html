@@ -7,5 +7,9 @@
         <label for="name">Name</label>
         <input type="text" name="name" class="form-control" placeholder="Enter name" ng-model="patient.name">
     </div>
+    <div class="form-group">
+        <label for="history">History</label>
+        <textarea name="history" class="form-control" rows="3" ng-model="patient.history"></textarea>
+    </div>
     <button type="submit" class="btn btn-default" ng-click="submit(patient)">Submit</button>
 </form>
