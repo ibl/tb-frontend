@@ -180,7 +180,7 @@
         });
     });
 
-    app.controller("CreateConferenceController", function ($scope, $location, Conference, patients) {
+    app.controller("CreateConferenceController", function ($scope, $state, Conference, patients) {
         $scope.patients = patients;
         $scope.submit = function (newConference) {
          // Find checked patients.
@@ -195,12 +195,12 @@
                 return patient._id;
             });
             Conference.save(newConference, function () {
-                $location.path("/conferences");
+                $state.go("listConferences");
             });
         };
     });
 
-    app.controller("EditConferenceController", function ($scope, $location, Conference, conference, patients) {
+    app.controller("EditConferenceController", function ($scope, $state, Conference, conference, patients) {
         $scope.conference = conference;
      // Pre-check patients.
         $scope.patients = patients.map(function (patient) {
@@ -222,7 +222,7 @@
                 return patient._id;
             });
             Conference.update(newConference, function () {
-                $location.path("/conferences");
+                $state.go("listConferences");
             });
         };
     });
@@ -242,19 +242,19 @@
         });
     });
 
-    app.controller("CreatePatientController", function ($scope, $location, Patient) {
+    app.controller("CreatePatientController", function ($scope, $state, Patient) {
         $scope.submit = function (newPatient) {
             Patient.save(newPatient, function () {
-                $location.path("/patients");
+                $state.go("listPatients");
             });
         };
     });
 
-    app.controller("EditPatientController", function ($scope, $location, Patient, patient) {
+    app.controller("EditPatientController", function ($scope, $state, Patient, patient) {
         $scope.patient = patient;
         $scope.submit = function (newPatient) {
             Patient.update(newPatient, function () {
-                $location.path("/patients");
+                $state.go("listPatients");
             });
         };
     });
