@@ -11,3 +11,27 @@
         </li>
     </ul>
 </p>
+<p>
+    <strong>Observations:</strong><br>
+    <a ui-sref="createObservation({ patientId: patient._id })" class="btn btn-default">
+        <span class="glyphicon glyphicon-plus-sign"></span>
+        Add observation
+    </a>
+    <table class="table table-striped">
+        <tr>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Options</th>
+        </tr>
+        <tr ng-repeat="observation in observations">
+            <td>{{observation.type}}</td>
+            <td>{{observation.value}}</td>
+            <td>
+                <a ui-sref="editObservation({ patientId: patient._id, observationId: observation._id })" class="btn btn-default btn-xs">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    Edit
+                </a>
+            </td>
+        </tr>
+    </table>
+</p>
