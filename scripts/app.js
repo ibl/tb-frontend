@@ -8,9 +8,16 @@
     app = angular.module("app", ["ngResource", "ui.router"]);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
-        var conferencesResolver, conferenceResolver, patientsResolver, patientResolver;
+        var conferencesResolver, conferencesByPatientResolver, conferenceResolver, patientsResolver, patientResolver;
         conferencesResolver = function (Conference) {
             return Conference.query().$promise;
+        };
+        conferencesByPatientResolver = function ($stateParams, Conference) {
+            return Conference.query({
+                conditions: {
+                    patients: $stateParams.patientId
+                }
+            }).$promise;
         };
         conferenceResolver = function ($stateParams, Conference) {
             return Conference.get({
@@ -82,7 +89,7 @@
             controller: "ViewPatientController",
             resolve: {
                 patient: patientResolver,
-                conferences: conferencesResolver
+                conferences: conferencesByPatientResolver
             }
         }).state("viewSelectedPatient", {
             parent: "viewConference",
@@ -91,7 +98,7 @@
             controller: "ViewPatientController",
             resolve: {
                 patient: patientResolver,
-                conferences: conferencesResolver
+                conferences: conferencesByPatientResolver
             }
         }).state("createPatient", {
             url: "/patients/new",
@@ -233,13 +240,7 @@
 
     app.controller("ViewPatientController", function ($scope, patient, conferences) {
         $scope.patient = patient;
-        $scope.patientConferences = conferences.filter(function (conference) {
-            if (conference.patients.indexOf($scope.patient._id) > -1) {
-                return true;
-            } else {
-                return false;
-            }
-        });
+        $scope.conferences = conferences;
     });
 
     app.controller("CreatePatientController", function ($scope, $state, Patient) {

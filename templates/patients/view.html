@@ -3,7 +3,7 @@
 <p><strong>History:</strong> {{patient.history}}</p>
 <p>
     <strong>Conferences:</strong>
-    <ul ng-repeat="conference in patientConferences">
+    <ul ng-repeat="conference in conferences">
         <li>
             <a ui-sref="viewConference({ conferenceId: conference._id })">
                 {{conference.date | date:'shortDate'}}: {{conference.name}}
