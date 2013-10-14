@@ -10,7 +10,7 @@
         <div>
             <strong>Patients</strong><br>
             <ul>
-                <li ng-repeat="patient in conferencePatients">
+                <li ng-repeat="patient in conference.patients">
                     <a ui-sref="viewSelectedPatient({ conferenceId: conference._id, patientId: patient._id })">
                         {{patient.name}}
                     </a>

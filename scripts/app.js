@@ -8,7 +8,7 @@
     app = angular.module("app", ["ngResource", "ui.router"]);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
-        var conferencesResolver, conferencesByPatientResolver, conferenceResolver, patientsResolver, patientResolver;
+        var conferencesResolver, conferencesByPatientResolver, conferenceResolver, conferenceAndPatientsResolver, patientsResolver, patientResolver;
         conferencesResolver = function (Conference) {
             return Conference.query().$promise;
         };
@@ -22,6 +22,12 @@
         conferenceResolver = function ($stateParams, Conference) {
             return Conference.get({
                 id: $stateParams.conferenceId
+            }).$promise;
+        };
+        conferenceAndPatientsResolver = function ($stateParams, Conference) {
+            return Conference.get({
+                id: $stateParams.conferenceId,
+                populate: "patients"
             }).$promise;
         };
         patientsResolver = function (Patient) {
@@ -41,10 +47,10 @@
                 recentConferences: function (Conference) {
                     return Conference.query({
                         limit: 10,
-                        sort: "-date"
+                        sort: "-date",
+                        populate: "patients"
                     }).$promise;
-                },
-                patients: patientsResolver
+                }
             }
         }).state("listConferences", {
             url: "/conferences",
@@ -58,8 +64,7 @@
             templateUrl: "templates/conferences/view.html",
             controller: "ViewConferenceController",
             resolve: {
-                conference: conferenceResolver,
-                patients: patientsResolver
+                conference: conferenceAndPatientsResolver
             }
         }).state("createConference", {
             url: "/conferences/new",
@@ -152,20 +157,8 @@
         });
     });
 
-    app.controller("IndexController", function ($scope, recentConferences, patients) {
+    app.controller("IndexController", function ($scope, recentConferences) {
         $scope.recentConferences = recentConferences;
-        $scope.$watch("conference", function () {
-            $scope.conferencePatients = $scope.conference.patients.map(function (conferencePatientId) {
-             // Join patients.
-                return patients.filter(function (patient) {
-                    if (patient._id === conferencePatientId) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                })[0];
-            });
-        });
         $scope.conference = recentConferences[0];
     });
 
@@ -173,18 +166,8 @@
         $scope.conferences = conferences;
     });
 
-    app.controller("ViewConferenceController", function ($scope, conference, patients) {
+    app.controller("ViewConferenceController", function ($scope, conference) {
         $scope.conference = conference;
-        $scope.conferencePatients = $scope.conference.patients.map(function (conferencePatientId) {
-         // Join patients.
-            return patients.filter(function (patient) {
-                if (patient._id === conferencePatientId) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })[0];
-        });
     });
 
     app.controller("CreateConferenceController", function ($scope, $state, Conference, patients) {
