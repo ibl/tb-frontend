@@ -7,6 +7,10 @@
                 </select>
             </div>
         </form>
+        <div ng-hide="recentConferences">
+            <strong>Conference</strong>
+            <p>{{conference.date | date:'shortDate'}}: {{conference.name}}</p>
+        </div>
         <div>
             <strong>Patients</strong><br>
             <ul>
