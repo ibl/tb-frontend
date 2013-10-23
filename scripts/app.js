@@ -8,7 +8,7 @@
     app = angular.module("app", ["ngResource", "ui.router"]);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
-        var conferencesResolver, conferencesByPatientResolver, conferenceResolver, conferenceAndPatientsResolver, patientsResolver, patientResolver, observationsByPatientResolver, observationResolver;
+        var conferencesResolver, conferencesByPatientResolver, conferenceResolver, conferenceAndPatientsResolver, patientsResolver, patientResolver, observationsByPatientResolver, observationResolver, interpretationsByObservationResolver, interpretationResolver;
         conferencesResolver = function (Conference) {
             return Conference.query().$promise;
         };
@@ -48,6 +48,18 @@
         observationResolver = function ($stateParams, Observation) {
             return Observation.get({
                 id: $stateParams.observationId
+            }).$promise;
+        };
+        interpretationsByObservationResolver = function ($stateParams, Interpretation) {
+            return Interpretation.query({
+                conditions: {
+                    observation: $stateParams.observationId
+                }
+            }).$promise;
+        };
+        interpretationResolver = function ($stateParams, Interpretation) {
+            return Interpretation.get({
+                id: $stateParams.interpretationId
             }).$promise;
         };
         $urlRouterProvider.otherwise("/");
@@ -130,6 +142,14 @@
             resolve: {
                 patient: patientResolver
             }
+        }).state("viewObservation", {
+            url: "patient/:patientId/observations/view/:observationId",
+            templateUrl: "templates/observations/view.html",
+            controller: "ViewObservationController",
+            resolve: {
+                observation: observationResolver,
+                interpretations: interpretationsByObservationResolver
+            }
         }).state("createObservation", {
             url: "/patient/:patientId/observations/new",
             templateUrl: "templates/observations/edit.html",
@@ -140,6 +160,17 @@
             controller: "EditObservationController",
             resolve: {
                 observation: observationResolver
+            }
+        }).state("createInterpretation", {
+            url: "/patient/:patientId/interpretations/new",
+            templateUrl: "templates/interpretations/edit.html",
+            controller: "CreateInterpretationController"
+        }).state("editInterpretation", {
+            url: "/patient/:patientId/interpretation/:interpretationId",
+            templateUrl: "templates/interpretations/edit.html",
+            controller: "EditInterpretationController",
+            resolve: {
+                interpretation: interpretationResolver
             }
         }).state("listModules", {
             url: "/modules",
@@ -184,6 +215,16 @@
 
     app.factory("Observation", function ($resource) {
         return $resource(backend + "/observations/:id", {
+            id: "@_id"
+        }, {
+            update: {
+                method: "PUT"
+            }
+        });
+    });
+
+    app.factory("Interpretation", function ($resource) {
+        return $resource(backend + "/interpretations/:id", {
             id: "@_id"
         }, {
             update: {
@@ -279,6 +320,11 @@
         };
     });
 
+    app.controller("ViewObservationController", function ($scope, observation, interpretations) {
+        $scope.observation = observation;
+        $scope.interpretations = interpretations;
+    });
+
     app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation) {
         $scope.submit = function (newObservation) {
          // Keep reference to patient.
@@ -297,6 +343,29 @@
             Observation.update(newObservation, function () {
                 $state.go("viewPatient", {
                     patientId: observation.patient
+                });
+            });
+        };
+    });
+
+    app.controller("CreateInterpretationController", function ($scope, $stateParams, $state, Interpretation) {
+        $scope.submit = function (newInterpretation) {
+         // Keep reference to observation.
+            newInterpretation.observation = $stateParams.observationId;
+            Interpretation.save(newInterpretation, function () {
+                $state.go("viewPatient", {
+                    patientId: $stateParams.patientId
+                });
+            });
+        };
+    });
+
+    app.controller("EditInterpretationController", function ($scope, $state, Interpretation, interpretation) {
+        $scope.interpretation = interpretation;
+        $scope.submit = function (newInterpretation) {
+            Interpretation.update(newInterpretation, function () {
+                $state.go("viewPatient", {
+                    patientId: interpretation.patient
                 });
             });
         };

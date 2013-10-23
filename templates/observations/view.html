@@ -1,0 +1,13 @@
+<p><strong>Type:</strong> {{observation.type}}</p>
+<p><strong>Value:</strong> {{observation.value}}</p>
+<p>
+    <strong>Interpretations:</strong><br>
+    <table class="table table-striped">
+        <tr>
+            <th>Comment</th>
+        </tr>
+        <tr ng-repeat="interpretation in interpretations">
+            <td>{{interpretation.comment}}</td>
+        </tr>
+    </table>
+</p>
