@@ -2,19 +2,19 @@
     <div class="col-md-3">
         <form ng-show="recentConferences" class="spacer">
             <div class="form-group">
-                <label>Conference</label>
+                <h4>Conference</h4>
                 <select class="form-control" ng-model="conference" ng-options="conference.date | date:'shortDate' for conference in recentConferences">
                 </select>
             </div>
         </form>
         <div ng-hide="recentConferences">
-            <strong>Conference</strong>
+            <h4>Conference</h4>
             <p>{{conference.date | date:'shortDate'}}: {{conference.name}}</p>
         </div>
         <div>
-            <strong>Patients</strong><br>
-            <ul>
-                <li ng-repeat="patient in conference.patients">
+            <h4>Patients</h4>
+            <ul class="list-group">
+                <li ng-repeat="patient in conference.patients" class="list-group-item">
                     <a ui-sref="viewSelectedPatient({ conferenceId: conference._id, patientId: patient._id })">
                         {{patient.name}}
                     </a>
