@@ -23,8 +23,8 @@
         </td>
     </tr>
 </table>
-<ul class="pager">
-    <li class="previous"><a ui-sref="listPatients({ limit: limit, skip: skip - limit})">&larr; Older</a></li>
-    <li>{{ skip }} to {{ skip + limit }}</li>
-    <li class="next"><a ui-sref="listPatients({ limit: limit, skip: skip + limit})">Newer &rarr;</a></li>
+<ul class="pagination patination-sm">
+    <li class="previous" ng-class="{ disabled: prev < 0}"><a ui-sref="listPatients({skip: previous})">&larr; Prev</a></li>
+    <li ng-repeat="page in pages"><a ui-sref="listPatients({skip: page.skip})">{{page.page}}</a></li>
+    <li class="next"><a ui-sref="listPatients({skip: next})">Next &rarr;</a></li>
 </ul>

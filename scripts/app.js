@@ -263,6 +263,14 @@
         $scope.skip = parseInt($stateParams.skip, 10) || 0;
         $scope.next = $scope.skip + $scope.limit;
         $scope.previous = $scope.skip - $scope.limit;
+        $scope.pages = []
+        for (var i = 1; i < 6; i++ ) {
+            var offset = $scope.skip + $scope.limit * i
+            $scope.pages.push({
+                page: (offset)/$scope.limit + 1,
+                skip: offset
+            });
+        }
     });
 
     app.controller("ViewPatientController", function ($scope, patient, conferences, observations) {
