@@ -23,3 +23,8 @@
         </td>
     </tr>
 </table>
+<ul class="pager">
+    <li class="previous"><a ui-sref="listPatients({ limit: limit, skip: skip - limit})">&larr; Older</a></li>
+    <li>{{ skip }} to {{ skip + limit }}</li>
+    <li class="next"><a ui-sref="listPatients({ limit: limit, skip: skip + limit})">Newer &rarr;</a></li>
+</ul>

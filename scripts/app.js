@@ -1,7 +1,9 @@
 (function () {
     "use strict";
 
-    var backend, app;
+    var backend, app, defaultLimit;
+
+    defaultLimit = 25;
 
     backend = "http://hydrogen.path.uab.edu/tb/api/v1";
 
@@ -30,8 +32,11 @@
                 populate: "patients"
             }).$promise;
         };
-        patientsResolver = function (Patient) {
-            return Patient.query().$promise;
+        patientsResolver = function ($stateParams, Patient) {
+            return Patient.query({
+                limit: $stateParams.limit || defaultLimit,
+                skip: $stateParams.skip || 0
+            }).$promise;
         };
         patientResolver = function ($stateParams, Patient) {
             return Patient.get({
@@ -94,7 +99,7 @@
                 patients: patientsResolver
             }
         }).state("listPatients", {
-            url: "/patients",
+            url: "/patients?limit&skip",
             templateUrl: "templates/patients/list.html",
             controller: "ListPatientsController",
             resolve: {
@@ -252,8 +257,12 @@
         };
     });
 
-    app.controller("ListPatientsController", function ($scope, patients) {
+    app.controller("ListPatientsController", function ($scope, patients, $stateParams) {
         $scope.patients = patients;
+        $scope.limit = parseInt($stateParams.limit, 10) || defaultLimit;
+        $scope.skip = parseInt($stateParams.skip, 10) || 0;
+        $scope.next = $scope.skip + $scope.limit;
+        $scope.previous = $scope.skip - $scope.limit;
     });
 
     app.controller("ViewPatientController", function ($scope, patient, conferences, observations) {
