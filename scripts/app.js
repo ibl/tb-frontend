@@ -179,7 +179,8 @@
 
     app.factory("Patient", function ($resource) {
         return $resource(backend + "/patients/:id", {
-            id: "@_id"
+            id: "@_id",
+            limit: defaultLimit
         }, {
             update: {
                 method: "PUT"
