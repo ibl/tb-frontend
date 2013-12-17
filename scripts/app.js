@@ -179,7 +179,8 @@
 
     app.factory("Patient", function ($resource) {
         return $resource(backend + "/patients/:id", {
-            id: "@_id"
+            id: "@_id",
+            limit: defaultLimit
         }, {
             update: {
                 method: "PUT"
@@ -257,7 +258,7 @@
         };
     });
 
-    app.controller("ListPatientsController", function ($scope, patients, $stateParams) {
+    app.controller("ListPatientsController", function ($scope, patients, $stateParams, Patient) {
         $scope.patients = patients;
         $scope.limit = parseInt($stateParams.limit, 10) || defaultLimit;
         $scope.skip = parseInt($stateParams.skip, 10) || 0;
@@ -269,6 +270,27 @@
             $scope.pages.push({
                 page: (offset)/$scope.limit + 1,
                 skip: offset
+            });
+        }
+
+        $scope.searchPatients = function (term) {
+            $scope.patients = Patient.query({
+                conditions: JSON.stringify({
+                    "$or": [
+                        {
+                            "name": {
+                                "$regex": term,
+                                "$options": "i"
+                            }
+                        },
+                        {
+                            "mrn": {
+                                "$regex": term,
+                                "$options": "i"
+                            }
+                        }
+                    ]
+                })
             });
         }
     });
