@@ -324,6 +324,7 @@
     });
 
     app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation) {
+        $scope.observation = {};
         $scope.submit = function (newObservation) {
          // Keep reference to patient.
             newObservation.patient = $stateParams.patientId;
@@ -333,6 +334,9 @@
                 });
             });
         };
+        $scope.captureFile = function (element) {
+            $scope.$apply(function () {$scope.observation.file = element.files[0];});
+        }
     });
 
     app.controller("EditObservationController", function ($scope, $state, Observation, observation) {
