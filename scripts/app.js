@@ -295,10 +295,15 @@
         }
     });
 
-    app.controller("ViewPatientController", function ($scope, patient, conferences, observations) {
+    app.controller("ViewPatientController", function ($scope, $state, patient, conferences, observations, Observation) {
         $scope.patient = patient;
         $scope.conferences = conferences;
         $scope.observations = observations;
+        $scope.deleteObservation = function (id) {
+            Observation.remove({id: id}, null, function () {
+                $state.reload();
+            });
+        };
     });
 
     app.controller("CreatePatientController", function ($scope, $state, Patient) {
