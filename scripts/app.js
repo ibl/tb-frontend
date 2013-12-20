@@ -198,6 +198,19 @@
         });
     });
 
+    app.factory("ObservationFile", function ($resource, $http) {
+        return {
+            create: function (params, file, success) {
+                var url = backend + "/observations/" + params.id + "/file";
+                return $http.put(url, file, {
+                    headers: {
+                        "Content-Type": file.type || "application/octet-stream"
+                    }
+                }).then(success);
+            }
+        }
+    });
+
     app.controller("IndexController", function ($scope, recentConferences) {
         $scope.recentConferences = recentConferences;
         $scope.conference = recentConferences[0];
@@ -323,12 +336,18 @@
         };
     });
 
-    app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation) {
+    app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation, ObservationFile) {
         $scope.observation = {};
         $scope.submit = function (newObservation) {
          // Keep reference to patient.
             newObservation.patient = $stateParams.patientId;
-            Observation.save(newObservation, function () {
+            Observation.save(newObservation, function (savedObservation) {
+                if ($scope.observation.file) {
+                 // Save the file.
+                    ObservationFile.create({ id: savedObservation._id }, $scope.observation.file, function () {
+                        console.log("File saved?");
+                    });
+                }
                 $state.go("viewPatient", {
                     patientId: $stateParams.patientId
                 });
