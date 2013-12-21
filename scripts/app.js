@@ -220,6 +220,9 @@
             },
             getFile: function (observation) {
                 return $http.get(backend + "/observations/" + observation._id + "/file");
+            },
+            remove: function (observation) {
+                return $http.delete(backend + "/observations/" + observation._id + "/file");
             }
         }
     });
@@ -326,8 +329,10 @@
         $scope.conferences = conferences;
         $scope.observations = observations;
         $scope.deleteObservation = function (observation) {
-         // @TODO also delete the file, if present
             Observation.remove({id: observation._id}, null, function () {
+                if (observation.file) {
+                    ObservationFile.remove(observation).then($state.reload);
+                }
                 $state.reload();
             });
         };
