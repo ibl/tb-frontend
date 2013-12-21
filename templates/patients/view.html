@@ -26,6 +26,10 @@
             <td>{{observation.type}}</td>
             <td>{{observation.value}}</td>
             <td>
+                <a class="btn btn-default btn-xs" type="button" ng-show="observation.file" ng-href="{{observation.file.url}}">
+                    <span class="glyphicon glyphicon-file"></span>
+                    View File
+                </a>
                 <a ui-sref="editObservation({ patientId: patient._id, observationId: observation._id })" class="btn btn-default btn-xs">
                     <span class="glyphicon glyphicon-pencil"></span>
                     Edit

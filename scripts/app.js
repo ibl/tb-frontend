@@ -43,12 +43,19 @@
                 id: $stateParams.patientId
             }).$promise;
         };
-        observationsByPatientResolver = function ($stateParams, Observation) {
+        observationsByPatientResolver = function ($stateParams, Observation, ObservationFile) {
             return Observation.query({
                 conditions: {
                     patient: $stateParams.patientId
                 }
-            }).$promise;
+            }).$promise.then(function (observations) {
+                angular.forEach(observations, function (observation) {
+                    if (observation.file) {
+                        observation.file.url = ObservationFile.getUrl(observation);
+                    }
+                });
+                return observations;
+            });
         };
         observationResolver = function ($stateParams, Observation) {
             return Observation.get({
@@ -207,6 +214,9 @@
                         "Content-Type": file.type || "application/octet-stream"
                     }
                 }).then(success);
+            },
+            getUrl: function (observation) {
+                return backend + "/observations/" + observation._id + "/file";
             }
         }
     });
