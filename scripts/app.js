@@ -217,6 +217,9 @@
             },
             getUrl: function (observation) {
                 return backend + "/observations/" + observation._id + "/file";
+            },
+            getFile: function (observation) {
+                return $http.get(backend + "/observations/" + observation._id + "/file");
             }
         }
     });
@@ -318,13 +321,20 @@
         }
     });
 
-    app.controller("ViewPatientController", function ($scope, $state, patient, conferences, observations, Observation) {
+    app.controller("ViewPatientController", function ($scope, $state, patient, conferences, observations, Observation, ObservationFile) {
         $scope.patient = patient;
         $scope.conferences = conferences;
         $scope.observations = observations;
         $scope.deleteObservation = function (id) {
+         // @TODO rewrite to take observation rather than id?
+         // @TODO also delete the file, if present
             Observation.remove({id: id}, null, function () {
                 $state.reload();
+            });
+        };
+        $scope.loadObservationFile = function (observation) {
+            ObservationFile.getFile(observation).then(function (file) {
+                observation.file.contents = file;
             });
         };
     });
