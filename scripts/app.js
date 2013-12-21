@@ -325,10 +325,9 @@
         $scope.patient = patient;
         $scope.conferences = conferences;
         $scope.observations = observations;
-        $scope.deleteObservation = function (id) {
-         // @TODO rewrite to take observation rather than id?
+        $scope.deleteObservation = function (observation) {
          // @TODO also delete the file, if present
-            Observation.remove({id: id}, null, function () {
+            Observation.remove({id: observation._id}, null, function () {
                 $state.reload();
             });
         };
