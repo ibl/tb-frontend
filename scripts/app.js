@@ -328,17 +328,14 @@
         $scope.patient = patient;
         $scope.conferences = conferences;
         $scope.observations = observations;
-        $scope.deleteObservation = function (observation) {
-            Observation.remove({id: observation._id}, null, function () {
-                if (observation.file) {
-                    ObservationFile.remove(observation).then($state.reload);
-                }
-                $state.reload();
-            });
-        };
         $scope.loadObservationFile = function (observation) {
             ObservationFile.getFile(observation).then(function (file) {
                 observation.file.contents = file;
+            });
+        };
+        $scope.removeObservation = function removeObservation(observation, index) {
+            observation.$remove(null, function () {
+                $scope.observations.splice(index, 1);
             });
         };
     });
