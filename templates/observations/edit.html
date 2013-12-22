@@ -9,7 +9,7 @@
     </div>
     <div class="form-group" ng-hide="observation.file">
         <label for="file">File</label>
-        <input type="file" name="file" onchange="angular.element(this).scope().captureFile(this)">
+        <file-capture ng-model="observation.file" />
     </div>
     <div class="well" ng-show="observation.file">
         {{observation.file.name}}

@@ -377,9 +377,6 @@
                 });
             });
         };
-        $scope.captureFile = function (element) {
-            $scope.$apply(function () {$scope.observation.file = element.files[0];});
-        }
     });
 
     app.controller("EditObservationController", function ($scope, $state, Observation, observation) {
@@ -401,6 +398,22 @@
                     location.reload();
                 });
             });
+        };
+    });
+
+    app.directive("fileCapture", function () {
+        return {
+            restrict: "E",
+            template: "<input type=\"file\" name=\"file\" onchange=\"angular.element(this).scope().captureFile(this)\">",
+            scope: true,
+            require: 'ng-model',
+            link: function ($scope, element, attributes, ngModel) {
+                $scope.captureFile = function (element) {
+                    $scope.$apply(function () {
+                        ngModel.$setViewValue(element.files[0]);
+                    });
+                }
+            }
         };
     });
 
