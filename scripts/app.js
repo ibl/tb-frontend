@@ -195,13 +195,39 @@
         });
     });
 
-    app.factory("Observation", function ($resource) {
+    app.factory("Observation", function ($resource, $http) {
+        function fileType(file) {
+            return file.type || "application/octet-stream";
+        };
         return $resource(backend + "/observations/:id", {
             id: "@_id"
         }, {
-            update: {
-                method: "PUT"
-            }
+            'get':    {method:'GET'},
+            'save':   {method:'POST', interceptor: {
+                'response': function (response) {
+                    var config = response.config,
+                        url = config.url + "/" + response.data._id + "/file",
+                        file = config.data.file;
+                    if (file) {
+                        return $http.put(url, file, {
+                            headers: {
+                                "Content-Type": fileType(file)
+                            }
+                        }).then(function () {
+                            return response;
+                        });
+                    } else {
+                        return response;
+                    }
+                }
+            }},
+            'query':  {method:'GET', isArray:true},
+            'remove': {method:'DELETE', interceptor: {
+                'response': function (response) {
+                }
+            }},
+            'delete': {method:'DELETE'},
+            'update': {method:'PUT'}
         });
     });
 
@@ -362,13 +388,7 @@
         $scope.submit = function (newObservation) {
          // Keep reference to patient.
             newObservation.patient = $stateParams.patientId;
-            Observation.save(newObservation, function (savedObservation) {
-                if ($scope.observation.file) {
-                 // Save the file.
-                    ObservationFile.create({ id: savedObservation._id }, $scope.observation.file, function () {
-                        console.log("File saved?");
-                    });
-                }
+            Observation.save(newObservation, function () {
                 $state.go("viewPatient", {
                     patientId: $stateParams.patientId
                 });
