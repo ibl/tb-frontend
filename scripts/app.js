@@ -48,14 +48,7 @@
                 conditions: {
                     patient: $stateParams.patientId
                 }
-            }).$promise.then(function (observations) {
-                angular.forEach(observations, function (observation) {
-                    if (observation.file) {
-                        observation.file.url = ObservationFile.getUrl(observation);
-                    }
-                });
-                return observations;
-            });
+            }).$promise;
         };
         observationResolver = function ($stateParams, Observation) {
             return Observation.get({
@@ -202,12 +195,20 @@
         return $resource(backend + "/observations/:id", {
             id: "@_id"
         }, {
-            'get':    {method:'GET'},
+            'get':    {method:'GET', interceptor: {
+                'response': function (response) {
+                    var url = response.config.url,
+                        file = response.resource.file;
+                    if (file) {
+                        file.url = url + "/file";
+                    }
+                    return response.resource;
+                }
+            }},
             'save':   {method:'POST', interceptor: {
                 'response': function (response) {
-                    var config = response.config,
-                        url = config.url + "/" + response.data._id + "/file",
-                        file = config.data.file;
+                    var url = response.config.url + "/" + response.data._id + "/file",
+                        file = response.config.data.file;
                     if (file) {
                         return $http.put(url, file, {
                             headers: {
@@ -221,11 +222,18 @@
                     }
                 }
             }},
-            'query':  {method:'GET', isArray:true},
-            'remove': {method:'DELETE', interceptor: {
+            'query':  {method:'GET', isArray:true, interceptor: {
                 'response': function (response) {
+                    var baseUrl = response.config.url.split("?")[0];
+                    angular.forEach(response.resource, function (observation) {
+                        if (observation.file) {
+                            observation.file.url = baseUrl + "/" + observation._id + "/file";
+                        }
+                    });
+                    return response.resource;
                 }
             }},
+            'remove': {method:'DELETE'},
             'delete': {method:'DELETE'},
             'update': {method:'PUT'}
         });
