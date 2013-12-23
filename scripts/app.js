@@ -43,7 +43,7 @@
                 id: $stateParams.patientId
             }).$promise;
         };
-        observationsByPatientResolver = function ($stateParams, Observation) {
+        observationsByPatientResolver = function ($stateParams, Observation, ObservationFile) {
             return Observation.query({
                 conditions: {
                     patient: $stateParams.patientId
@@ -188,14 +188,77 @@
         });
     });
 
-    app.factory("Observation", function ($resource) {
+    app.factory("Observation", function ($resource, $http) {
+        function fileType(file) {
+            return file.type || "application/octet-stream";
+        };
         return $resource(backend + "/observations/:id", {
             id: "@_id"
         }, {
-            update: {
-                method: "PUT"
-            }
+            'get':    {method:'GET', interceptor: {
+                'response': function (response) {
+                    var url = response.config.url,
+                        file = response.resource.file;
+                    if (file) {
+                        file.url = url + "/file";
+                    }
+                    return response.resource;
+                }
+            }},
+            'save':   {method:'POST', interceptor: {
+                'response': function (response) {
+                    var url = response.config.url + "/" + response.data._id + "/file",
+                        file = response.config.data.file;
+                    if (file) {
+                        return $http.put(url, file, {
+                            headers: {
+                                "Content-Type": fileType(file)
+                            }
+                        }).then(function () {
+                            return response;
+                        });
+                    } else {
+                        return response;
+                    }
+                }
+            }},
+            'query':  {method:'GET', isArray:true, interceptor: {
+                'response': function (response) {
+                    var baseUrl = response.config.url.split("?")[0];
+                    angular.forEach(response.resource, function (observation) {
+                        if (observation.file) {
+                            observation.file.url = baseUrl + "/" + observation._id + "/file";
+                        }
+                    });
+                    return response.resource;
+                }
+            }},
+            'remove': {method:'DELETE'},
+            'delete': {method:'DELETE'},
+            'update': {method:'PUT'}
         });
+    });
+
+    app.factory("ObservationFile", function ($resource, $http) {
+        return {
+            create: function (params, file, success) {
+                var url = backend + "/observations/" + params.id + "/file";
+                return $http.put(url, file, {
+                    headers: {
+                        "Content-Type": file.type || "application/octet-stream"
+                    }
+                }).then(success);
+            },
+            getUrl: function (observation) {
+                return backend + "/observations/" + observation._id + "/file";
+            },
+            getFile: function (observation) {
+                return $http.get(backend + "/observations/" + observation._id + "/file");
+            },
+            remove: function (observation) {
+                return $http.delete(backend + "/observations/" + observation._id + "/file");
+            }
+        }
     });
 
     app.controller("IndexController", function ($scope, recentConferences) {
@@ -295,13 +358,18 @@
         }
     });
 
-    app.controller("ViewPatientController", function ($scope, $state, patient, conferences, observations, Observation) {
+    app.controller("ViewPatientController", function ($scope, $state, patient, conferences, observations, Observation, ObservationFile) {
         $scope.patient = patient;
         $scope.conferences = conferences;
         $scope.observations = observations;
-        $scope.deleteObservation = function (id) {
-            Observation.remove({id: id}, null, function () {
-                $state.reload();
+        $scope.loadObservationFile = function (observation) {
+            ObservationFile.getFile(observation).then(function (file) {
+                observation.file.contents = file;
+            });
+        };
+        $scope.removeObservation = function removeObservation(observation, index) {
+            observation.$remove(null, function () {
+                $scope.observations.splice(index, 1);
             });
         };
     });
@@ -323,7 +391,8 @@
         };
     });
 
-    app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation) {
+    app.controller("CreateObservationController", function ($scope, $stateParams, $state, Observation, ObservationFile) {
+        $scope.observation = {};
         $scope.submit = function (newObservation) {
          // Keep reference to patient.
             newObservation.patient = $stateParams.patientId;
@@ -354,6 +423,22 @@
                     location.reload();
                 });
             });
+        };
+    });
+
+    app.directive("fileCapture", function () {
+        return {
+            restrict: "E",
+            template: "<input type=\"file\" name=\"file\" onchange=\"angular.element(this).scope().captureFile(this)\">",
+            scope: true,
+            require: 'ng-model',
+            link: function ($scope, element, attributes, ngModel) {
+                $scope.captureFile = function (element) {
+                    $scope.$apply(function () {
+                        ngModel.$setViewValue(element.files[0]);
+                    });
+                }
+            }
         };
     });
 

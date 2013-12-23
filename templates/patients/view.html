@@ -26,14 +26,29 @@
             <td>{{observation.type}}</td>
             <td>{{observation.value}}</td>
             <td>
-                <a ui-sref="editObservation({ patientId: patient._id, observationId: observation._id })" class="btn btn-default btn-xs">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                    Edit
-                </a>
-                <button class="btn btn-danger btn-xs" type="button" ng-click="deleteObservation(observation._id)">
-                    <span class="glyphicon glyphicon-fire"></span>
-                    Delete
-                </button>
+                <span ng-show="observation.file">
+                    <button class="btn btn-default btn-xs" type="button" ng-hide="observation.file.contents" ng-click="loadObservationFile(observation)">
+                        <span class="glyphicon glyphicon-download"></span>
+                        Load File
+                    </button>
+                    <button class="btn btn-info btn-xs" type="button" ng-show="observation.file.contents" ng-click="loadObservationFile(observation)">
+                        Loaded
+                    </button>
+                    <a class="btn btn-default btn-xs" type="button" ng-href="{{observation.file.url}}">
+                        <span class="glyphicon glyphicon-file"></span>
+                        View File
+                    </a>
+                </span>
+                <span class="pull-right">
+                    <a ui-sref="editObservation({ patientId: patient._id, observationId: observation._id })" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Edit
+                    </a>
+                    <button class="btn btn-danger btn-xs" type="button" ng-click="removeObservation(observation, $index)">
+                        <span class="glyphicon glyphicon-fire"></span>
+                        Delete
+                    </button>
+                </span>
             </td>
         </tr>
     </table>

@@ -7,5 +7,15 @@
         <label for="value">Value</label>
         <input type="text" name="value" class="form-control" placeholder="Enter value" ng-model="observation.value">
     </div>
+    <div class="form-group" ng-hide="observation.file">
+        <label for="file">File</label>
+        <file-capture ng-model="observation.file" />
+    </div>
+    <div class="well" ng-show="observation.file">
+        {{observation.file.name}}
+        <span class="label label-info">Size: {{observation.file.size}} Bytes</span>
+        <span class="label label-info">Type: {{observation.file.type}}</span>
+        <span class="pull-right"><button class="btn btn-danger btn-xs" type="button" ng-click="observation.file = null"><span class="glyphicon glyphicon-remove-sign"></span></button></span>
+    </div>
     <button type="submit" class="btn btn-default" ng-click="submit(observation)">Submit</button>
 </form>
