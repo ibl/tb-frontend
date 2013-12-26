@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/main.css" media="screen"/>
+        <title>Tumor Boards</title>
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a ui-sref="index" class="navbar-brand">Tumor Boards</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a ui-sref="listConferences">Conferences</a></li>
+                        <li><a ui-sref="listPatients">Patients</a></li>
+                        <li><a ui-sref="listModules">Modules</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <div ui-view></div>
+        </div>
+        <script src="scripts/vendor.js"></script>
+        <script src="scripts/app.js"></script>
+    </body>
+</html>
