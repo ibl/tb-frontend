@@ -7,7 +7,14 @@
 
     backend = "http://hydrogen.path.uab.edu/tb/api/v1";
 
-    app = angular.module("app", ["ngResource", "ui.router"]);
+ // Declare the templates module, if it doesn't already exist, as in the dev environment
+    try {
+        angular.module("templates-app");
+    } catch (e) {
+        angular.module("templates-app", []);
+    }
+
+    app = angular.module("app", ["ngResource", "ui.router", "templates-app"]);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
         var conferencesResolver, conferencesByPatientResolver, conferenceResolver, conferenceAndPatientsResolver, patientsResolver, patientResolver, observationsByPatientResolver, observationResolver;
