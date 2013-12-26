@@ -1,4 +1,258 @@
 (function () {
+angular.module('templates-app', ['templates/conferences/edit.html', 'templates/conferences/list.html', 'templates/conferences/view.html', 'templates/modules/list.html', 'templates/observations/edit.html', 'templates/patients/edit.html', 'templates/patients/list.html', 'templates/patients/view.html']);
+
+angular.module("templates/conferences/edit.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/conferences/edit.html",
+    "<form role=\"form\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"date\">Date</label>\n" +
+    "        <input type=\"date\" name=\"date\" class=\"form-control\" placeholder=\"Enter date\" ng-model=\"conference.date\" value=\"{{conference.date | date:'yyyy-MM-dd'}}\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"name\">Name</label>\n" +
+    "        <input type=\"text\" name=\"name\" class=\"form-control\" placeholder=\"Enter name\" ng-model=\"conference.name\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <strong>Patients<strong><br>\n" +
+    "        <label class=\"checkbox-inline\" ng-repeat=\"patient in patients\">\n" +
+    "            <input type=\"checkbox\" name=\"patients[]\" value=\"{{patient._id}}\" ng-checked=\"patient.checked\" ng-model=\"patient.checked\">\n" +
+    "            {{patient.name}}\n" +
+    "        </label>\n" +
+    "    </div>\n" +
+    "    <button type=\"submit\" class=\"btn btn-default\" ng-click=\"submit(conference)\">Submit</button>\n" +
+    "</form>\n" +
+    "");
+}]);
+
+angular.module("templates/conferences/list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/conferences/list.html",
+    "<a ui-sref=\"createConference\" class=\"btn btn-default spacer\">\n" +
+    "    <span class=\"glyphicon glyphicon-plus-sign\"></span>\n" +
+    "    Add conference\n" +
+    "</a>\n" +
+    "<table class=\"table table-striped\">\n" +
+    "    <tr>\n" +
+    "        <th>Date</th>\n" +
+    "        <th>Name</th>\n" +
+    "        <th>Options</th>\n" +
+    "    </tr>\n" +
+    "    <tr ng-repeat=\"conference in conferences\">\n" +
+    "        <td>{{conference.date | date:'shortDate'}}</td>\n" +
+    "        <td>{{conference.name}}</td>\n" +
+    "        <td>\n" +
+    "            <a ui-sref=\"viewConference({ conferenceId: conference._id })\" class=\"btn btn-default btn-xs\">\n" +
+    "                <span class=\"glyphicon glyphicon-search\"></span>\n" +
+    "                View\n" +
+    "            </a>\n" +
+    "            <a ui-sref=\"editConference({ conferenceId: conference._id })\" class=\"btn btn-default btn-xs\">\n" +
+    "                <span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+    "                Edit\n" +
+    "            </a>\n" +
+    "        </td>\n" +
+    "    </tr>\n" +
+    "</table>\n" +
+    "");
+}]);
+
+angular.module("templates/conferences/view.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/conferences/view.html",
+    "<div class=\"row\">\n" +
+    "    <div class=\"col-md-3\">\n" +
+    "        <form ng-show=\"recentConferences\" class=\"spacer\">\n" +
+    "            <div class=\"form-group\">\n" +
+    "                <h4>Conference</h4>\n" +
+    "                <select class=\"form-control\" ng-model=\"conference\" ng-options=\"conference.date | date:'shortDate' for conference in recentConferences\">\n" +
+    "                </select>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
+    "        <div ng-hide=\"recentConferences\">\n" +
+    "            <h4>Conference</h4>\n" +
+    "            <p>{{conference.date | date:'shortDate'}}: {{conference.name}}</p>\n" +
+    "        </div>\n" +
+    "        <div>\n" +
+    "            <h4>Patients</h4>\n" +
+    "            <ul class=\"list-group\">\n" +
+    "                <li ng-repeat=\"patient in conference.patients\" class=\"list-group-item\">\n" +
+    "                    <a ui-sref=\"viewSelectedPatient({ conferenceId: conference._id, patientId: patient._id })\">\n" +
+    "                        {{patient.name}}\n" +
+    "                    </a>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"col-md-9\">\n" +
+    "        <div ui-view></div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("templates/modules/list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/modules/list.html",
+    "<form class=\"form-inline spacer\" role=\"form\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <input type=\"text\" name=\"module\" class=\"form-control\" placeholder=\"Enter URL\" ng-model=\"module\" value=\"{{module}}\">\n" +
+    "    </div>\n" +
+    "    <button type=\"submit\" class=\"btn btn-default\" ng-click=\"loadModule(module)\">Submit</button>\n" +
+    "</form>\n" +
+    "<table class=\"table table-striped\">\n" +
+    "    <tr ng-repeat=\"module in modules\">\n" +
+    "        <td>{{module}}</td>\n" +
+    "    </tr>\n" +
+    "</table>\n" +
+    "");
+}]);
+
+angular.module("templates/observations/edit.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/observations/edit.html",
+    "<form role=\"form\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"type\">Type</label>\n" +
+    "        <input type=\"text\" name=\"type\" class=\"form-control\" placeholder=\"Enter type\" ng-model=\"observation.type\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"value\">Value</label>\n" +
+    "        <input type=\"text\" name=\"value\" class=\"form-control\" placeholder=\"Enter value\" ng-model=\"observation.value\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\" ng-hide=\"observation.file\">\n" +
+    "        <label for=\"file\">File</label>\n" +
+    "        <file-capture ng-model=\"observation.file\" />\n" +
+    "    </div>\n" +
+    "    <div class=\"well\" ng-show=\"observation.file\">\n" +
+    "        {{observation.file.name}}\n" +
+    "        <span class=\"label label-info\">Size: {{observation.file.size}} Bytes</span>\n" +
+    "        <span class=\"label label-info\">Type: {{observation.file.type}}</span>\n" +
+    "        <span class=\"pull-right\"><button class=\"btn btn-danger btn-xs\" type=\"button\" ng-click=\"observation.file = null\"><span class=\"glyphicon glyphicon-remove-sign\"></span></button></span>\n" +
+    "    </div>\n" +
+    "    <button type=\"submit\" class=\"btn btn-default\" ng-click=\"submit(observation)\">Submit</button>\n" +
+    "</form>\n" +
+    "");
+}]);
+
+angular.module("templates/patients/edit.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/patients/edit.html",
+    "<form role=\"form\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"mrn\">MRN</label>\n" +
+    "        <input type=\"text\" name=\"mrn\" class=\"form-control\" placeholder=\"Enter MRN\" ng-model=\"patient.mrn\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"name\">Name</label>\n" +
+    "        <input type=\"text\" name=\"name\" class=\"form-control\" placeholder=\"Enter name\" ng-model=\"patient.name\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"history\">History</label>\n" +
+    "        <textarea name=\"history\" class=\"form-control\" rows=\"3\" ng-model=\"patient.history\"></textarea>\n" +
+    "    </div>\n" +
+    "    <button type=\"submit\" class=\"btn btn-default\" ng-click=\"submit(patient)\">Submit</button>\n" +
+    "</form>\n" +
+    "");
+}]);
+
+angular.module("templates/patients/list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/patients/list.html",
+    "<div class=\"pull-right\">\n" +
+    "    <form action=\"\" role=\"search\">\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input class=\"form-control\" type=\"text\" placeholder=\"Search for Name or MRN\" ng-change=\"searchPatients(searchTerm)\" ng-model=\"searchTerm\">\n" +
+    "        </div>\n" +
+    "    </form>\n" +
+    "</div>\n" +
+    "<a ui-sref=\"createPatient\" class=\"btn btn-default spacer\">\n" +
+    "    <span class=\"glyphicon glyphicon-plus-sign\"></span>\n" +
+    "    Add patient\n" +
+    "</a>\n" +
+    "<table class=\"table table-striped\">\n" +
+    "    <tr>\n" +
+    "        <th>Name</th>\n" +
+    "        <th>MRN</th>\n" +
+    "        <th>Options</th>\n" +
+    "    </tr>\n" +
+    "    <tr ng-repeat=\"patient in patients\">\n" +
+    "        <td>{{patient.name}}</td>\n" +
+    "        <td>{{patient.mrn}}</td>\n" +
+    "        <td>\n" +
+    "            <a ui-sref=\"viewPatient({ patientId: patient._id })\" class=\"btn btn-default btn-xs\">\n" +
+    "                <span class=\"glyphicon glyphicon-search\"></span>\n" +
+    "                View\n" +
+    "            </a>\n" +
+    "            <a ui-sref=\"editPatient({ patientId: patient._id })\" class=\"btn btn-default btn-xs\">\n" +
+    "                <span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+    "                Edit\n" +
+    "            </a>\n" +
+    "        </td>\n" +
+    "    </tr>\n" +
+    "</table>\n" +
+    "<ul class=\"pagination patination-sm\">\n" +
+    "    <li class=\"previous\" ng-class=\"{ disabled: prev < 0}\"><a ui-sref=\"listPatients({skip: previous})\">&larr; Prev</a></li>\n" +
+    "    <li ng-repeat=\"page in pages\"><a ui-sref=\"listPatients({skip: page.skip})\">{{page.page}}</a></li>\n" +
+    "    <li class=\"next\"><a ui-sref=\"listPatients({skip: next})\">Next &rarr;</a></li>\n" +
+    "</ul>\n" +
+    "");
+}]);
+
+angular.module("templates/patients/view.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/patients/view.html",
+    "<h2>{{patient.name}} <small>{{patient.mrn}}</small></h2>\n" +
+    "<p><strong>History:</strong> {{patient.history}}</p>\n" +
+    "<p>\n" +
+    "    <strong>Conferences:</strong>\n" +
+    "    <ul ng-repeat=\"conference in conferences\">\n" +
+    "        <li>\n" +
+    "            <a ui-sref=\"viewSelectedPatient({ conferenceId: conference._id, patientId: patient._id })\">\n" +
+    "                {{conference.date | date:'shortDate'}}: {{conference.name}}\n" +
+    "            </a>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "</p>\n" +
+    "<p>\n" +
+    "    <strong>Observations:</strong><br>\n" +
+    "    <a ui-sref=\"createObservation({ patientId: patient._id })\" class=\"btn btn-default\">\n" +
+    "        <span class=\"glyphicon glyphicon-plus-sign\"></span>\n" +
+    "        Add observation\n" +
+    "    </a>\n" +
+    "    <table class=\"table table-striped\">\n" +
+    "        <tr>\n" +
+    "            <th>Type</th>\n" +
+    "            <th>Value</th>\n" +
+    "            <th>Options</th>\n" +
+    "        </tr>\n" +
+    "        <tr ng-repeat=\"observation in observations\">\n" +
+    "            <td>{{observation.type}}</td>\n" +
+    "            <td>{{observation.value}}</td>\n" +
+    "            <td>\n" +
+    "                <span ng-show=\"observation.file\">\n" +
+    "                    <button class=\"btn btn-default btn-xs\" type=\"button\" ng-hide=\"observation.file.contents\" ng-click=\"loadObservationFile(observation)\">\n" +
+    "                        <span class=\"glyphicon glyphicon-download\"></span>\n" +
+    "                        Load File\n" +
+    "                    </button>\n" +
+    "                    <button class=\"btn btn-info btn-xs\" type=\"button\" ng-show=\"observation.file.contents\" ng-click=\"loadObservationFile(observation)\">\n" +
+    "                        Loaded\n" +
+    "                    </button>\n" +
+    "                    <a class=\"btn btn-default btn-xs\" type=\"button\" ng-href=\"{{observation.file.url}}\">\n" +
+    "                        <span class=\"glyphicon glyphicon-file\"></span>\n" +
+    "                        View File\n" +
+    "                    </a>\n" +
+    "                </span>\n" +
+    "                <span class=\"pull-right\">\n" +
+    "                    <a ui-sref=\"editObservation({ patientId: patient._id, observationId: observation._id })\" class=\"btn btn-default btn-xs\">\n" +
+    "                        <span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+    "                        Edit\n" +
+    "                    </a>\n" +
+    "                    <button class=\"btn btn-danger btn-xs\" type=\"button\" ng-click=\"removeObservation(observation, $index)\">\n" +
+    "                        <span class=\"glyphicon glyphicon-fire\"></span>\n" +
+    "                        Delete\n" +
+    "                    </button>\n" +
+    "                </span>\n" +
+    "            </td>\n" +
+    "        </tr>\n" +
+    "    </table>\n" +
+    "</p>\n" +
+    "");
+}]);
+})();
+
+(function () {
     "use strict";
 
     var backend, app, defaultLimit;
