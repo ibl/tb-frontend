@@ -5,27 +5,31 @@ module.exports = function (grunt) {
         connect: {
             dev: {
                 options: {
-                    livereload: true
+                    livereload: 8081,
+                    port: 8080,
+                    hostname: "*"
                 }
             },
             dist: {
                 options: {
-                    livereload: true,
+                    livereload: 8081,
                     open: true,
-                    base: "dist"
+                    base: "dist",
+                    port: 8080,
+                    hostname: "*"
                 }
             }
         },
         watch: {
             dev: {
                 options: {
-                    livereload: true
+                    livereload: 8081
                 },
                 files: ["index.html", "scripts/**/*", "styles/**/*", "templates/**/*"]
             },
             dist: {
                 options: {
-                    livereload: true
+                    livereload: 8081
                 },
                 files: ["index.html", "scripts/**/*", "styles/**/*", "templates/**/*"],
                 tasks: ['build']
