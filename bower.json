@@ -17,7 +17,7 @@
     "dependencies": {
         "angular": "~1.2.0-rc.2",
         "angular-resource": "~1.2.0-rc.2",
-        "angular-ui-router": "~0.2.0",
+        "angular-ui-router": "0.2.8-bowratic-tedium",
         "bootstrap": "~3.0.0",
         "jquery": "~2.0.3"
     }
