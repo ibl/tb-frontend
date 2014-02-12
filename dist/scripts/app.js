@@ -1,5 +1,5 @@
 (function () {
-angular.module('templates-app', ['templates/conferences/edit.html', 'templates/conferences/list.html', 'templates/conferences/view.html', 'templates/modules/list.html', 'templates/observations/edit.html', 'templates/patients/edit.html', 'templates/patients/list.html', 'templates/patients/view.html']);
+angular.module('templates-app', ['templates/conferences/edit.html', 'templates/conferences/list.html', 'templates/conferences/view.html', 'templates/credentials/edit.html', 'templates/modules/list.html', 'templates/observations/edit.html', 'templates/patients/edit.html', 'templates/patients/list.html', 'templates/patients/view.html']);
 
 angular.module("templates/conferences/edit.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/conferences/edit.html",
@@ -84,6 +84,26 @@ angular.module("templates/conferences/view.html", []).run(["$templateCache", fun
     "        <div ui-view></div>\n" +
     "    </div>\n" +
     "</div>\n" +
+    "");
+}]);
+
+angular.module("templates/credentials/edit.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/credentials/edit.html",
+    "<form role=\"form\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"backend\">Backend</label>\n" +
+    "        <input type=\"text\" name=\"backend\" class=\"form-control\" placeholder=\"Enter backend\" ng-model=\"credentials.backend\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"username\">Username</label>\n" +
+    "        <input type=\"text\" name=\"username\" class=\"form-control\" placeholder=\"Enter username\" ng-model=\"credentials.username\">\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label for=\"password\">Password</label>\n" +
+    "        <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Enter password\" ng-model=\"credentials.password\">\n" +
+    "    </div>\n" +
+    "    <button type=\"submit\" class=\"btn btn-default\" ng-click=\"submit(credentials)\">Submit</button>\n" +
+    "</form>\n" +
     "");
 }]);
 
@@ -259,8 +279,6 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
 
     defaultLimit = 25;
 
-    backend = "http://hydrogen.path.uab.edu/tb/api/v1";
-
  // Declare the templates module, if it doesn't already exist, as in the dev environment
     try {
         angular.module("templates-app");
@@ -317,8 +335,13 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
             }).$promise;
         };
         $urlRouterProvider.otherwise("/");
-        $stateProvider.state("index", {
+        $stateProvider.state("home", {
             url: "/",
+            templateUrl: "templates/credentials/edit.html",
+            controller: "EditCredentialsController"
+        }
+        ).state("index", {
+            url: "/index",
             templateUrl: "templates/conferences/view.html",
             controller: "IndexController",
             resolve: {
@@ -428,8 +451,16 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
         });
     });
 
-    app.factory("Conference", function ($resource) {
-        return $resource(backend + "/conferences/:id", {
+    app.factory("Credentials", function () {
+        return {
+            backend: "http://hydrogen.path.uab.edu/tb/api/v1",
+            username: "test",
+            password: "test"
+        };
+    });
+
+    app.factory("Conference", function ($resource, Credentials) {
+        return $resource(Credentials.backend + "/conferences/:id", {
             id: "@_id"
         }, {
             update: {
@@ -438,8 +469,8 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
         });
     });
 
-    app.factory("Patient", function ($resource) {
-        return $resource(backend + "/patients/:id", {
+    app.factory("Patient", function ($resource, Credentials) {
+        return $resource(Credentials.backend + "/patients/:id", {
             id: "@_id",
             limit: defaultLimit
         }, {
@@ -449,11 +480,11 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
         });
     });
 
-    app.factory("Observation", function ($resource, $http) {
+    app.factory("Observation", function ($resource, $http, Credentials) {
         function fileType(file) {
             return file.type || "application/octet-stream";
         };
-        return $resource(backend + "/observations/:id", {
+        return $resource(Credentials.backend + "/observations/:id", {
             id: "@_id"
         }, {
             'get':    {method:'GET', interceptor: {
@@ -500,10 +531,10 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
         });
     });
 
-    app.factory("ObservationFile", function ($resource, $http) {
+    app.factory("ObservationFile", function ($resource, $http, Credentials) {
         return {
             create: function (params, file, success) {
-                var url = backend + "/observations/" + params.id + "/file";
+                var url = Credentials.backend + "/observations/" + params.id + "/file";
                 return $http.put(url, file, {
                     headers: {
                         "Content-Type": file.type || "application/octet-stream"
@@ -511,13 +542,13 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
                 }).then(success);
             },
             getUrl: function (observation) {
-                return backend + "/observations/" + observation._id + "/file";
+                return Credentials.backend + "/observations/" + observation._id + "/file";
             },
             getFile: function (observation) {
-                return $http.get(backend + "/observations/" + observation._id + "/file");
+                return $http.get(Credentials.backend + "/observations/" + observation._id + "/file");
             },
             remove: function (observation) {
-                return $http.delete(backend + "/observations/" + observation._id + "/file");
+                return $http.delete(Credentials.backend + "/observations/" + observation._id + "/file");
             }
         }
     });
@@ -684,6 +715,14 @@ angular.module("templates/patients/view.html", []).run(["$templateCache", functi
                     location.reload();
                 });
             });
+        };
+    });
+
+    app.controller("EditCredentialsController", function ($scope, $state, $http, Credentials) {
+        $scope.credentials = Credentials;
+        $scope.submit = function () {
+            $http.defaults.headers.common.Authorization = "Basic " + btoa($scope.credentials.username + ":" + $scope.credentials.password);
+            $state.go("index");
         };
     });
 
