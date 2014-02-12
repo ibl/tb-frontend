@@ -5,8 +5,6 @@
 
     defaultLimit = 25;
 
-    backend = "http://hydrogen.path.uab.edu/tb/api/v1";
-
  // Declare the templates module, if it doesn't already exist, as in the dev environment
     try {
         angular.module("templates-app");
@@ -63,8 +61,13 @@
             }).$promise;
         };
         $urlRouterProvider.otherwise("/");
-        $stateProvider.state("index", {
+        $stateProvider.state("home", {
             url: "/",
+            templateUrl: "templates/credentials/edit.html",
+            controller: "EditCredentialsController"
+        }
+        ).state("index", {
+            url: "/index",
             templateUrl: "templates/conferences/view.html",
             controller: "IndexController",
             resolve: {
@@ -174,8 +177,16 @@
         });
     });
 
-    app.factory("Conference", function ($resource) {
-        return $resource(backend + "/conferences/:id", {
+    app.factory("Credentials", function () {
+        return {
+            backend: "http://hydrogen.path.uab.edu/tb/api/v1",
+            username: "test",
+            password: "test"
+        };
+    });
+
+    app.factory("Conference", function ($resource, Credentials) {
+        return $resource(Credentials.backend + "/conferences/:id", {
             id: "@_id"
         }, {
             update: {
@@ -184,8 +195,8 @@
         });
     });
 
-    app.factory("Patient", function ($resource) {
-        return $resource(backend + "/patients/:id", {
+    app.factory("Patient", function ($resource, Credentials) {
+        return $resource(Credentials.backend + "/patients/:id", {
             id: "@_id",
             limit: defaultLimit
         }, {
@@ -195,11 +206,11 @@
         });
     });
 
-    app.factory("Observation", function ($resource, $http) {
+    app.factory("Observation", function ($resource, $http, Credentials) {
         function fileType(file) {
             return file.type || "application/octet-stream";
         };
-        return $resource(backend + "/observations/:id", {
+        return $resource(Credentials.backend + "/observations/:id", {
             id: "@_id"
         }, {
             'get':    {method:'GET', interceptor: {
@@ -246,10 +257,10 @@
         });
     });
 
-    app.factory("ObservationFile", function ($resource, $http) {
+    app.factory("ObservationFile", function ($resource, $http, Credentials) {
         return {
             create: function (params, file, success) {
-                var url = backend + "/observations/" + params.id + "/file";
+                var url = Credentials.backend + "/observations/" + params.id + "/file";
                 return $http.put(url, file, {
                     headers: {
                         "Content-Type": file.type || "application/octet-stream"
@@ -257,13 +268,13 @@
                 }).then(success);
             },
             getUrl: function (observation) {
-                return backend + "/observations/" + observation._id + "/file";
+                return Credentials.backend + "/observations/" + observation._id + "/file";
             },
             getFile: function (observation) {
-                return $http.get(backend + "/observations/" + observation._id + "/file");
+                return $http.get(Credentials.backend + "/observations/" + observation._id + "/file");
             },
             remove: function (observation) {
-                return $http.delete(backend + "/observations/" + observation._id + "/file");
+                return $http.delete(Credentials.backend + "/observations/" + observation._id + "/file");
             }
         }
     });
@@ -430,6 +441,14 @@
                     location.reload();
                 });
             });
+        };
+    });
+
+    app.controller("EditCredentialsController", function ($scope, $state, $http, Credentials) {
+        $scope.credentials = Credentials;
+        $scope.submit = function () {
+            $http.defaults.headers.common.Authorization = "Basic " + btoa($scope.credentials.username + ":" + $scope.credentials.password);
+            $state.go("index");
         };
     });
 
