@@ -63,6 +63,10 @@ module.exports = function (grunt) {
                 dest: "dist/fonts/",
                 filter: "isFile",
                 expand: true
+            },
+            module: {
+                src: "scripts/module.js",
+                dest: "dist/module.js"
             }
         },
         useminPrepare: {
