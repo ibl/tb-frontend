@@ -176,6 +176,21 @@
             }
         });
     });
+    
+    app.run(["Credentials", "$window", function (Credentials, $window) {
+        var backend, username;
+        backend = localStorage.getItem("mtb.backend");
+        username = localStorage.getItem("mtb.username");
+        if (backend) {
+            Credentials.backend = backend;
+            console.log("Using stored backend:", backend);
+        }
+        if (username) {
+            Credentials.username = username;
+            Credentials.password = null;
+            console.log("Using stored username:", username);
+        }
+    }]);
 
     app.factory("Credentials", function () {
         return {
@@ -447,6 +462,8 @@
     app.controller("EditCredentialsController", function ($scope, $state, $http, Credentials) {
         $scope.credentials = Credentials;
         $scope.submit = function () {
+            localStorage.setItem("mtb.backend", $scope.credentials.backend);
+            localStorage.setItem("mtb.username", $scope.credentials.username);
             $http.defaults.headers.common.Authorization = "Basic " + btoa($scope.credentials.username + ":" + $scope.credentials.password);
             $state.go("index");
         };
